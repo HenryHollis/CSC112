@@ -24,7 +24,7 @@ using namespace std;
 //=== data type to store a word and its count ==================
 struct wordFreq{
 
-wordFreq (){word[0] = '\0'; count = 0;}  // constructor for the WordFreq type , just a good idea ...
+wordFreq(){word[0] = '\0'; count = 0;}  // constructor for the WordFreq type , just a good idea ...
 
 
 char word[MAX_STRING_SIZE];  // the word
@@ -32,7 +32,7 @@ int count = 0 ;              // the word frequency
 };
 
 void process(char fileName[], wordFreq list[], int& num);
-bool isWord(char str[]);
+bool isWord(char str[], int n);
 void readFileName(char fileName[]);
 void addWordToList(char str[], wordFreq list[], int& num);
 int search(char str[], wordFreq list[], int num);
@@ -53,8 +53,6 @@ int num = 0;           			 //number of unique words
 char fileName[MAX_STRING_SIZE];  //store input file name
 
 process(fileName, list, num);    //send the file to be processed
-
-insertionSorter(list, num);      //I sort the frequency of words so that the frq file is nice and orderly
 
 fileWriter(list, num);           //Write to file
 
@@ -123,7 +121,7 @@ while (!inFile.eof()){			           // loop through until the end of file
 	if (!isalpha(ch) || bigWordTrigger){   // if ch is word delineator, or the rest of a big word, we can classify the string
 						        
 		bigWordTrigger = false;            // reset my trigger switch
-		if(isWord(str))			           // if string is a word, add to list
+		if(isWord(str, n))			           // if string is a word, add to list
 			addWordToList(str, list, num);
 
 	    str[0] = '\0';			// reset the string
@@ -139,27 +137,32 @@ while (!inFile.eof()){			           // loop through until the end of file
 			bigWordTrigger = true;    // if there's not space set this big word trigger
 	}
 
-ch = inFile.get();     //get the next character
+ch = inFile.get();     				  //get the next character
 }
 
 inFile.close();
+
+insertionSorter(list, num);           //I sort the frequency of words so that the frq file is nice and orderly
+
 cout<<fileName<<" has "<<num<< " total unique words."<<endl;
 cout<<"-----------------------------------------------"<<endl;
 }
 
 
+
 /**
  * @brief      Determines if the C-string is a word (a word being composed of only letters).
  *
- * @param      str   The C-String in question
+ * @param      str   The string
+ * @param[in]  n     characters in string
  *
  * @return     True if word, False otherwise.
  */
-bool isWord(char str[]){
+bool isWord(char str[], int n){
 
 	bool word = true;   						 //assume word is true...
 
-	for(int i =0; i<(signed)strlen(str); i++){   //loop through every letter in C-string
+	for(int i =0; i<=n; i++){   //loop through every letter in C-string
 		if(!isalpha(str[i])){					 //if the current character is not a letter...
 			return false;						 //return that its not a word
 		}
@@ -207,7 +210,7 @@ void addWordToList(char str[], wordFreq list[], int& num){
 int search(char str[], wordFreq list[], int num){
 
 	bool match = false;                          //assume no match..
-	for (int i = 0; i <= num; i++) {             //loop through list of structs
+	for (int i = 0; i <=num; i++) {             //loop through list of structs
 		if (strlen(str) == strlen(list[i].word)) //if the string is not the same length as element, automatically skip it
 			if (strcmp(str, list[i].word)==0)    
 				match = true;					 //match found
@@ -261,7 +264,8 @@ do{
 	cout<<"Creating "<<fileName<<"... ";
 }
 while (outFile.fail());
-	for(int i = 0; i < num ; i ++)		//loop through list and print frequency data in file
+
+for(int i = 0; i < num ; i ++)				   //loop through list and print frequency data in file
 		outFile << list[i] << endl;
 outFile.close();
 cout<<"done!"<<endl;
